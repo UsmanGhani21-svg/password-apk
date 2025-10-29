@@ -1,4 +1,4 @@
-name: Build Python APK with Buildozer (final stable version)
+name: Build Python APK with Buildozer (no-input + allow-root)
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
             -v $PWD:/home/user/app \
             -w /home/user/app \
             kivy/buildozer \
-            bash -c "yes | buildozer --allow-root -v android debug"
+            bash -c "yes | buildozer --allow-root --noinput -v android debug"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
