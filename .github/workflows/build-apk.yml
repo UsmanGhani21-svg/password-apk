@@ -1,3 +1,52 @@
+# name: Build Python APK with Buildozer
+
+# on:
+#   push:
+#     branches: [ main ]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.10"
+
+#       - name: Install dependencies
+#         run: |
+#           sudo apt update
+#           sudo apt install -y openjdk-17-jdk unzip zip libffi-dev git wget
+#           pip install --upgrade pip
+#           pip install buildozer==1.5.0
+
+#       - name: Install Android SDK and Build Tools
+#         run: |
+#           mkdir -p $HOME/android-sdk/cmdline-tools
+#           cd $HOME/android-sdk/cmdline-tools
+#           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O tools.zip
+#           unzip tools.zip
+#           # move the extracted folder correctly so sdkmanager path works
+#           mv cmdline-tools latest
+#           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
+#           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+
+#       - name: Build APK
+#         run: |
+#           export ANDROIDSDK=$HOME/android-sdk
+#           export ANDROIDNDK=$HOME/android-sdk/ndk
+#           buildozer init || true
+#           buildozer -v android debug
+
+#       - name: Upload APK artifact
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: password-time-apk
+#           path: bin/*.apk
 name: Build Python APK with Buildozer
 
 on:
@@ -22,7 +71,7 @@ jobs:
           sudo apt update
           sudo apt install -y openjdk-17-jdk unzip zip libffi-dev git wget
           pip install --upgrade pip
-          pip install buildozer==1.5.0
+          pip install cython buildozer==1.5.0
 
       - name: Install Android SDK and Build Tools
         run: |
@@ -30,7 +79,6 @@ jobs:
           cd $HOME/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O tools.zip
           unzip tools.zip
-          # move the extracted folder correctly so sdkmanager path works
           mv cmdline-tools latest
           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses
           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platform-tools" "build-tools;34.0.0" "platforms;android-34"
