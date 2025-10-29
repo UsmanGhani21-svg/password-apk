@@ -1,4 +1,4 @@
-name: Build Python APK with Buildozer (Auto Root Accept)
+name: Build Python APK with Buildozer (final root fix)
 
 on:
   push:
@@ -15,11 +15,10 @@ jobs:
       - name: Build APK using Docker
         run: |
           docker run --rm \
-            -e BUILDOZER_ALLOW_ROOT=1 \
             -v $PWD:/home/user/app \
             -w /home/user/app \
             kivy/buildozer \
-            bash -c "buildozer -v android debug"
+            bash -c "export BUILDOZER_ALLOW_ROOT=1 && echo 'Allowing root for Buildozer...' && buildozer -v android debug"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
