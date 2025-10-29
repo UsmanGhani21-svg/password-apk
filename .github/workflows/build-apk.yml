@@ -7,30 +7,57 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install apt packages
         run: |
           sudo apt update
-          sudo apt install -y openjdk-17-jdk unzip zip libffi-dev
-          pip install --upgrade pip
+          # basic build tools often required by python-for-android / buildozer
+          sudo apt install -y build-essential git zlib1g-dev libncurses5-dev \
+            libssl-dev libsqlite3-dev libffi-dev liblzma-dev libbz2-dev \
+            openjdk-17-jdk unzip zip
+
+      - name: Install pip packages
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          # install Cython (often required), and Buildozer
+          pip install cython
           pip install buildozer==1.5.0
 
-      - name: Build APK
+      - name: Ensure buildozer.spec exists
         run: |
-          buildozer init || true
+          if [ ! -f buildozer.spec ]; then
+            echo "ERROR: buildozer.spec not found in repo. Commit buildozer.spec and push." >&2
+            exit 1
+          fi
+
+      - name: Build APK (debug)
+        run: |
+          # Run buildozer build (this will download Android SDK/NDK etc. on first run)
           buildozer -v android debug
 
+      - name: List possible APK output locations
+        run: |
+          echo "Artifacts in bin/:"
+          ls -la bin || true
+          echo "Artifacts in platforms/ (if present):"
+          ls -la platforms || true
+
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: password-time-apk
-          path: bin/*.apk
+          # try to catch APKs from either location
+          path: |
+            bin/*.apk
+            platforms/android/app/build/outputs/apk/**/*.apk
+            platforms/*/build/outputs/apk/**/*.apk
