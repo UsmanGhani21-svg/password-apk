@@ -40,13 +40,16 @@ jobs:
           export ANDROIDSDK=$HOME/android-sdk
           export PATH=$ANDROIDSDK/build-tools/34.0.0:$ANDROIDSDK/platform-tools:$PATH
 
-          # Create directories Buildozer expects
+          # Make sure Buildozer sees the installed SDK correctly
           mkdir -p $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk
           ln -sf $ANDROIDSDK/build-tools $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk/build-tools
           ln -sf $ANDROIDSDK/platform-tools $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk/platform-tools
           ln -sf $ANDROIDSDK/platforms $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk/platforms
 
-          # Build the APK
+          echo "ANDROIDAPI=34" >> $GITHUB_ENV
+          echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$ANDROIDSDK/build-tools/34.0.0:$ANDROIDSDK/platform-tools:$PATH" >> $GITHUB_ENV
+
           buildozer init || true
           buildozer -v android debug
 
@@ -56,58 +59,4 @@ jobs:
           name: password-time-apk
           path: bin/*.apk
 
-
-
-# name: Build Python APK with Buildozer
-
-# on:
-#   push:
-#     branches: [ main ]
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: "3.10"
-
-#       - name: Install dependencies
-#         run: |
-#           sudo apt update
-#           sudo apt install -y openjdk-17-jdk unzip zip libffi-dev git wget
-#           pip install --upgrade pip
-#           pip install cython buildozer==1.5.0
-
-#       - name: Install Android SDK (with licenses accepted)
-#         run: |
-#           mkdir -p $HOME/android-sdk/cmdline-tools
-#           cd $HOME/android-sdk/cmdline-tools
-#           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O tools.zip
-#           unzip tools.zip
-#           mv cmdline-tools latest
-#           yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk --licenses || true
-#           # install stable platform + build-tools versions
-#           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk \
-#             "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-#           # verify aidl path
-#           ls -R $HOME/android-sdk/build-tools || true
-
-#       - name: Build APK
-#         run: |
-#           export ANDROIDSDK=$HOME/android-sdk
-#           export ANDROIDNDK=$HOME/android-sdk/ndk
-#           buildozer init || true
-#           buildozer -v android debug
-
-#       - name: Upload APK artifact
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: password-time-apk
-#           path: bin/*.apk
 
