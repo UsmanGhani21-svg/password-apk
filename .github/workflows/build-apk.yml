@@ -1,4 +1,4 @@
-name: Build Python APK with Buildozer (Non-Interactive)
+name: Build Python APK with Buildozer (allow-root fix)
 
 on:
   push:
@@ -12,19 +12,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build APK using Docker (auto-confirm prompts)
+      - name: Build APK using Docker
         run: |
           docker run --rm \
             -v $PWD:/home/user/app \
             -w /home/user/app \
             kivy/buildozer \
-            bash -c "yes | buildozer -v android debug"
+            bash -c "buildozer --allow-root -v android debug"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: password-time-apk
           path: bin/*.apk
+
 
 
 
