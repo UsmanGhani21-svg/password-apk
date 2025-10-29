@@ -1,4 +1,4 @@
-name: Build APK (Docker)
+name: Build APK (Docker, non-interactive)
 
 on:
   push:
@@ -11,24 +11,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fix permissions
-        run: |
-          sudo chown -R 1000:1000 .
-
-      - name: Build with Buildozer (no root prompt)
+      - name: Build with Buildozer (auto-confirm root)
         run: |
           docker run --rm \
-            --user 1000:1000 \
             -v $PWD:/home/user/app \
             -w /home/user/app \
+            -e BUILDOZER_ALLOW_ROOT=1 \
             kivy/buildozer \
-            buildozer -v android debug
+            bash -c "export PATH=\$PATH:/home/user/.local/bin && buildozer -v android debug"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: password-time-apk
           path: bin/*.apk
+
 
 
 
