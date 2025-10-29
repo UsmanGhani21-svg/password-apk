@@ -11,15 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build with pre-setup Buildozer image
+      - name: Build with Buildozer (no root prompt)
         run: |
-          docker run --rm -v $PWD:/home/user/app kivy/buildozer \
-            buildozer android debug
+          docker run --rm -u 1000:1000 -v $PWD:/home/user/app kivy/buildozer \
+            bash -c "export PATH=\$PATH:/home/user/.local/bin && buildozer -v android debug"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: password-time-apk
           path: bin/*.apk
+
 
 
