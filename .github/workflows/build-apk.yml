@@ -39,9 +39,18 @@ jobs:
         run: |
           export ANDROIDSDK=$HOME/android-sdk
           export ANDROIDNDK=$HOME/android-sdk/ndk
-          # make sure Buildozer sees the SDK where it expects it
+          export PATH=$ANDROIDSDK/build-tools/34.0.0:$PATH
+          export PATH=$ANDROIDSDK/platform-tools:$PATH
+
+          # Make sure Buildozer sees the installed SDK
           mkdir -p $HOME/work/${{ github.repository }}/.buildozer/android/platform
           ln -sf $HOME/android-sdk $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk
+
+          # Force environment values to use correct SDK/build-tools
+          echo "export ANDROIDAPI=34" >> ~/.bashrc
+          echo "export ANDROIDSDK=$HOME/android-sdk" >> ~/.bashrc
+          echo "export PATH=$HOME/android-sdk/build-tools/34.0.0:$PATH" >> ~/.bashrc
+
           buildozer init || true
           buildozer -v android debug
 
@@ -50,6 +59,7 @@ jobs:
         with:
           name: password-time-apk
           path: bin/*.apk
+
 
 # name: Build Python APK with Buildozer
 

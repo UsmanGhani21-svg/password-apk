@@ -10,7 +10,6 @@ orientation = portrait
 fullscreen = 0
 
 [android]
-# Force stable API and Build Tools version
 android.api = 34
 android.minapi = 21
 android.ndk = 25b
@@ -20,3 +19,4 @@ android.accept_android_sdk_license = True
 android.sdk_path = /home/runner/android-sdk
 android.build_tools = 34.0.0
 android.permissions = INTERNET
+
