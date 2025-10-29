@@ -20,3 +20,4 @@ android.sdk_path = /home/runner/android-sdk
 android.build_tools = 34.0.0
 android.permissions = INTERNET
 
+

@@ -24,7 +24,7 @@ jobs:
           pip install --upgrade pip
           pip install cython buildozer==1.5.0
 
-      - name: Install Android SDK (with licenses accepted)
+      - name: Install Android SDK (accept licenses)
         run: |
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
@@ -38,19 +38,15 @@ jobs:
       - name: Build APK
         run: |
           export ANDROIDSDK=$HOME/android-sdk
-          export ANDROIDNDK=$HOME/android-sdk/ndk
-          export PATH=$ANDROIDSDK/build-tools/34.0.0:$PATH
-          export PATH=$ANDROIDSDK/platform-tools:$PATH
+          export PATH=$ANDROIDSDK/build-tools/34.0.0:$ANDROIDSDK/platform-tools:$PATH
 
-          # Make sure Buildozer sees the installed SDK
-          mkdir -p $HOME/work/${{ github.repository }}/.buildozer/android/platform
-          ln -sf $HOME/android-sdk $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk
+          # Create directories Buildozer expects
+          mkdir -p $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk
+          ln -sf $ANDROIDSDK/build-tools $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk/build-tools
+          ln -sf $ANDROIDSDK/platform-tools $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk/platform-tools
+          ln -sf $ANDROIDSDK/platforms $HOME/work/${{ github.repository }}/.buildozer/android/platform/android-sdk/platforms
 
-          # Force environment values to use correct SDK/build-tools
-          echo "export ANDROIDAPI=34" >> ~/.bashrc
-          echo "export ANDROIDSDK=$HOME/android-sdk" >> ~/.bashrc
-          echo "export PATH=$HOME/android-sdk/build-tools/34.0.0:$PATH" >> ~/.bashrc
-
+          # Build the APK
           buildozer init || true
           buildozer -v android debug
 
@@ -59,6 +55,7 @@ jobs:
         with:
           name: password-time-apk
           path: bin/*.apk
+
 
 
 # name: Build Python APK with Buildozer
