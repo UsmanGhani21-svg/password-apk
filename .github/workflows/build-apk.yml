@@ -1,4 +1,4 @@
-name: Build Python APK with Buildozer (final root fix)
+name: Build APK with Buildozer
 
 on:
   push:
@@ -7,24 +7,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build APK using Docker
+      - uses: actions/checkout@v4
+      - name: Build APK (auto-confirm root)
         run: |
           docker run --rm \
             -v $PWD:/home/user/app \
             -w /home/user/app \
             kivy/buildozer \
-            bash -c "export BUILDOZER_ALLOW_ROOT=1 && echo 'Allowing root for Buildozer...' && buildozer -v android debug"
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+            bash -c "yes | buildozer -v android debug"
+      - uses: actions/upload-artifact@v4
         with:
           name: password-time-apk
           path: bin/*.apk
+
 
 
 
